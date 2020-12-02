@@ -1,5 +1,4 @@
 *~
-*.tmp
 sqlite3
 sqlite3.fts3ext
 sqlite3.fts3ext.*
@@ -10,6 +9,8 @@ sqlite3.c
 sqlite3.h
 sqlite3ext.h
 shell.c
-index.db3
-index.db3-journal
-index.db3.tmp
+/index.db3
+/index.db3-journal
+/index.db3.tmp
+/test.exp
+/test.out
