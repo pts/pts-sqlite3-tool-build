@@ -15,6 +15,19 @@ set -ex
 # Example: ./test.sh sqlite-amalgamation-*/sqlite3.*fts3ext{,.linux-*,.ubuntu*-*}
 for SQLITE3_CMD in "$@"; do
 
+case "$SQLITE3_CMD" in
+ http://* | https://*)
+  rm -f sqlite3.dl
+  if curl --version >/dev/null; then
+    curl -sL "$@" >sqlite3.dl
+  else
+    wget -qO- "$@" >sqlite3.dl
+  fi
+  chmod +x sqlite3.dl
+  SQLITE3_CMD=./sqlite3.dl
+  ;;
+esac
+
 test -f "$SQLITE3_CMD" || case "$SQLITE3_CMD" in *\*) continue ;; esac
 
 rm -f test.exp test.out index.db3.tmp index.db3

@@ -14,3 +14,4 @@ shell.c
 /index.db3.tmp
 /test.exp
 /test.out
+/sqlite3.dl
