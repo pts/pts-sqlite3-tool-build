@@ -1,9 +1,9 @@
 *~
 sqlite3
 sqlite3.fts3ext
-sqlite3.fts3ext.*
+sqlite3.fts3ext.?*
 sqlite3.nofts3ext
-sqlite3.nofts3ext.*
+sqlite3.nofts3ext.?*
 sqlite-amalgamation-*.zip
 sqlite3.c
 sqlite3.h
