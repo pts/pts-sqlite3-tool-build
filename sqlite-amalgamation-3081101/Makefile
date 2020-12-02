@@ -7,7 +7,7 @@
 
 # -DSQLITE_OMIT_DATETIME_FUNCS -DSQLUTE_OMIT_EXPLAIN -DSQLITE_OMIT_FOREIGN_KEY -DSQLITE_OMIT_GET_TABLE -DSQLITE_OMIT_LOCALTIME -DSQLITE_OMIT_PROGRESS_CALLBACK -DSQLITE_OMIT_WAL
 DEFINES = -DSQLITE_ENABLE_FTS3 -DSQLITE_OMIT_LOAD_EXTENSION -DSQLITE_THREADSAFE=0 -DSQLITE_OMIT_COMPILEOPTION_DIAGS -DSQLITE_OMIT_DEPRECATED -DSQLITE_OMIT_TRACE -DSQLITE_OMIT_AUTHORIZATION -DSQLITE_OMIT_GET_TABLE -DSQLITE_OMIT_PARSER_TRACE -DSQLITE_OMIT_POPEN -DSQLITE_OMIT_TEST_CONTROL -DSQLITE_OMIT_UTF16 -DHAVE_UTIME
-WARNINGS = -W -Wall -Wextra -Wno-maybe-uninitialized -Wno-unused-parameter -Wno-unused-variable -Wno-unused-value -Wno-unused-but-set-variable -Wno-unused-function
+WARNINGS = -W -Wall -Wextra -Wno-maybe-uninitialized -Wno-unused-parameter -Wno-unused-variable -Wno-unused-value -Wno-unused-but-set-variable -Wno-unused-function -Wno-implicit-fallthrough
 OPTS = -fdata-sections -ffunction-sections -Wl,--gc-sections -s -O2
 SRCS = sqlite3.c shell.c
 SRCSM = $(SRCS) #Makefile
