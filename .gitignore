@@ -1,0 +1,14 @@
+*~
+*.tmp
+sqlite3.fts3ext
+sqlite3.fts3ext.*
+sqlite3.nofts3ext
+sqlite3.nofts3ext.*
+sqlite-amalgamation-*.zip
+sqlite3.c
+sqlite3.h
+sqlite3ext.h
+shell.c
+index.db3
+index.db3-journal
+index.db3.tmp
