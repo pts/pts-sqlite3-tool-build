@@ -2,7 +2,10 @@
 set -ex
 
 for URL in \
+    https://sqlite.org/sqlite-amalgamation-3_6_0.zip \
+    https://sqlite.org/sqlite-source-3_6_0.zip \
     https://sqlite.org/sqlite-amalgamation-3_6_7.zip \
+    https://sqlite.org/sqlite-source-3_6_7.zip \
     https://sqlite.org/sqlite-amalgamation-3_6_23_1.zip \
     https://sqlite.org/2013/sqlite-amalgamation-3080200.zip \
     https://sqlite.org/2015/sqlite-amalgamation-3081101.zip \

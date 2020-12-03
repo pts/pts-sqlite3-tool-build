@@ -34,6 +34,18 @@ rm -f test.exp test.out index.db3.tmp index.db3
 
 rm -f index.db3.tmp index.db3
 
+V="$("$SQLITE3_CMD" --version)"
+case "$V" in
+[0-2][.]* | 3[.][0-5][.]*) echo "fatal: sqlite3 too old: $V" >&2; exit 1 ;;
+3[.][6-7][.]* | 3[.]8[.][0-1] | 3[.]8[.][0-1][.-]*) IS_OLD=1 ;;
+3[.]*) IS_OLD= ;;  # Not old iff 3.8.2 <= version < 4.
+*) echo "fatal: unknown sqlite3 version: $V" >&2; exit 1 ;;
+esac
+
+CVT="fts4(filename, notindexed=filename, tags, matchinfo=fts3)"
+# This is a bit wasteful because it indexes words in filename as well.
+test "$IS_OLD" && CVT="fts3(filename, tags)"
+
 "$SQLITE3_CMD" -batch -init /dev/null/missing index.db3.tmp "
 PRAGMA journal_mode = off;  -- For speedup.
 PRAGMA synchronous = off;  -- For speedup.
@@ -43,16 +55,16 @@ BEGIN EXCLUSIVE;  -- Speedup by a factor of ~3.77.
 -- The final version will have case sensitive matches in tags.
 -- It's not possible to enforce UNIQUE(filename) in an fts4 table,
 -- but we will manually ensure that there are no duplicate filenames.
-CREATE VIRTUAL TABLE assoc USING fts4(filename, notindexed=filename, tags, matchinfo=fts3);
-INSERT INTO assoc (filename, tags) VALUES
-('dir1/file11', 'foo bar'),
-('dir1/file12', 'foo bar'),
-('dir2/file21', 'foo bar'),
-('dir2/file22', 'foo bar'),
-('dir2/dir23/file231', 'foo bar'),
-('dir2/file24', 'foo bar'),
-('dir3/file31', 'foo bar'),
-('dir3/file32', 'foo foobar');
+CREATE VIRTUAL TABLE assoc USING $CVT;
+-- We could use comma syntax.
+INSERT INTO assoc (filename, tags) VALUES ('dir1/file11', 'foo bar');
+INSERT INTO assoc (filename, tags) VALUES ('dir1/file12', 'foo bar');
+INSERT INTO assoc (filename, tags) VALUES ('dir2/file21', 'foo bar');
+INSERT INTO assoc (filename, tags) VALUES ('dir2/file22', 'foo bar');
+INSERT INTO assoc (filename, tags) VALUES ('dir2/dir23/file231', 'foo bar');
+INSERT INTO assoc (filename, tags) VALUES ('dir2/file24', 'foo bar');
+INSERT INTO assoc (filename, tags) VALUES ('dir3/file31', 'foo bar');
+INSERT INTO assoc (filename, tags) VALUES ('dir3/file32', 'foo foobar');
 COMMIT;
 -- TODO: Speedup: The final version will use an in-memory database up to
 --       this point, and then .clone here.
@@ -91,6 +103,24 @@ foo bar :: dir3/file31
 END
 diff -U9999 test.exp test.out
 
+# Filenames must not match.
+"$SQLITE3_CMD" -batch -init /dev/null/missing -separator " :: " index.db3 "SELECT tags, filename FROM assoc WHERE tags MATCH 'dir1'" >test.out
+cat >test.exp <<'END'
+END
+diff -U9999 test.exp test.out
+
+"$SQLITE3_CMD" -batch -init /dev/null/missing -separator " :: " index.db3 "SELECT tags, filename FROM assoc WHERE assoc MATCH 'dir1'" >test.out
+if test "$IS_OLD"; then
+cat >test.exp <<'END'
+foo bar :: dir1/file11
+foo bar :: dir1/file12
+END
+else
+cat >test.exp <<'END'
+END
+fi
+diff -U9999 test.exp test.out
+
 "$SQLITE3_CMD" -batch -init /dev/null/missing index.db3 "
 PRAGMA synchronous = off;  -- For speedup if power outages are unexpected.
 PRAGMA temp_store = memory;  -- For speedup.
@@ -107,9 +137,12 @@ SELECT rowid, tags, filename FROM assoc WHERE filename LIKE 'dir2/%';
 -- dir2/file21 was removed, dir2/file24 was untagged.
 DELETE FROM assoc WHERE rowid in (3, 6);
 UPDATE assoc SET tags = 'bar quux' WHERE rowid = 5;
-INSERT INTO assoc (filename, tags) VALUES
-('dir2/file25', 'foo bar'),
-('dir2/file26', 'foo bar');
+-- SQLite 3.6.x doesn't support his comma syntax in INSERT:
+--   INSERT INTO assoc (filename, tags) VALUES
+--   ('dir2/file25', 'foo bar'),
+--   ('dir2/file26', 'foo bar');
+INSERT INTO assoc (filename, tags) VALUES ('dir2/file25', 'foo bar');
+INSERT INTO assoc (filename, tags) VALUES ('dir2/file26', 'foo bar');
 -- Tags of dir2/file22 remain unchanged. In a typical index, most of
 -- the tags would remain unchanged.
 COMMIT;
@@ -150,4 +183,3 @@ rm -f test.exp test.out index.db3.tmp index.db3
 done  # for SQLITE3_CMD
 
 : "$0" OK for: "$@" >&2
-
