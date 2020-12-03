@@ -38,7 +38,7 @@ V="$("$SQLITE3_CMD" --version)"
 case "$V" in
 [0-2][.]* | 3[.][0-5][.]*) echo "fatal: sqlite3 too old: $V" >&2; exit 1 ;;
 3[.][6-7][.]* | 3[.]8[.][0-1] | 3[.]8[.][0-1][.-]*) IS_OLD=1 ;;
-3[.]*) IS_OLD= ;;  # Not old iff 3.8.2 <= version < 4.
+3[.]*) IS_OLD= ;;  # Not old iff 3.8.0 <= version < 4. Only >= 3.8.0 supports fts4(..., notindexed=...).
 *) echo "fatal: unknown sqlite3 version: $V" >&2; exit 1 ;;
 esac
 
