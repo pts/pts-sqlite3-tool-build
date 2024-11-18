@@ -19,6 +19,7 @@ CC = $(GCC) $(OPTS)
 AMD64_MUSL_LIBDIR = /usr/lib/x86_64-linux-musl
 AMD64_MUSL_INCLUDEDIR = /usr/include/x86_64-linux-musl
 CC_LINUX_I686_CMD = xstatic gcc -march=i686
+CC_LINUX_I686_MINI_CMD = minicc --gcc=4.8 --uclibc
 CC_LINUX_I686_LIBS =
 CC_LINUX_AMD64_CMD = gcc -fno-pic -fno-pie -fno-stack-protector -Wl,--build-id=none -static -nostdlib -nostdinc -isystem $(AMD64_MUSL_INCLUDEDIR) -m64 -march=x86-64
 CC_LINUX_AMD64_LIBS = $(AMD64_MUSL_LIBDIR)/crt1.o $(AMD64_MUSL_LIBDIR)/libc.a
@@ -52,6 +53,9 @@ sqlite3.nofts3ext: $(SRCSM)
 
 sqlite3.nofts3ext.linux-i686: $(SRCSM)
 	$(CC_LINUX_I686_CMD) $(OPTS) $(WARNINGS) $(DEFINES) -o $@.tmp $(SRCS) $(CC_LINUX_I686_LIBS) $(OSFIX)
+
+sqlite3.nofts3ext.linux-i686-mini: $(SRCSM)
+	$(CC_LINUX_I686_MINI_CMD) $(OPTS) $(WARNINGS) $(DEFINES) -o $@ $(SRCS) $(CC_LINUX_I686_LIBS)
 
 sqlite3.nofts3ext.linux-amd64: $(SRCSM)
 	$(CC_LINUX_AMD64_CMD) $(OPTS) $(WARNINGS) $(DEFINES) -o $@.tmp $(SRCS) $(CC_LINUX_AMD64_LIBS) $(OSFIX)
